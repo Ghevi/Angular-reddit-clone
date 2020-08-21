@@ -9,60 +9,51 @@ import { throwError } from 'rxjs';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+
   loginForm: FormGroup;
   loginRequestPayload: LoginRequestPayload;
   registerSuccessMessage: string;
   isError: boolean;
 
-  constructor(
-    private authService: AuthService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private toastr: ToastrService
-  ) {
+  constructor(private authService: AuthService, private activatedRoute: ActivatedRoute,
+    private router: Router, private toastr: ToastrService) {
     this.loginRequestPayload = {
       username: '',
-      password: '',
+      password: ''
     };
   }
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
       username: new FormControl('', Validators.required),
-      password: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required)
     });
 
-    this.activatedRoute.queryParams.subscribe((params) => {
-      if (params.registered !== undefined && params.registered === 'true') {
-        this.toastr.success('Signup successful');
-        this.registerSuccessMessage =
-          'Please, check your inbox for the activation mail ' +
-          'You must activate your account before login!';
-      }
-    });
+    this.activatedRoute.queryParams
+      .subscribe(params => {
+        if (params.registered !== undefined && params.registered === 'true') {
+          this.toastr.success('Signup Successful');
+          this.registerSuccessMessage = 'Please Check your inbox for activation email '
+            + 'activate your account before you Login!';
+        }
+      });
   }
 
-  onLogin() {
+  login() {
     this.loginRequestPayload.username = this.loginForm.get('username').value;
     this.loginRequestPayload.password = this.loginForm.get('password').value;
 
-    // this.authService.login(this.loginRequestPayload).subscribe((data) => {
-    //   console.log('Login successful');
-    // });
-
-    this.authService.login(this.loginRequestPayload).subscribe(
-      (data) => {
-        this.isError = false;
-        this.router.navigateByUrl('');
-        this.toastr.success('Login successful');
-      },
-      (error) => {
-        this.isError = true;
-        throwError(error);
-      }
-    );
+    this.authService.login(this.loginRequestPayload).subscribe(data => {
+      this.isError = false;
+      this.router.navigateByUrl('');
+      this.toastr.success('Login Successful');
+    }, error => {
+      this.isError = true;
+      throwError(error);
+    });
   }
+
 }
